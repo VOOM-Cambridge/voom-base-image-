@@ -1,0 +1,38 @@
+version: '2'
+
+services:
+    user-input-dc:
+        extends:
+            file: user_input_dc/app.yml
+            service: app
+        networks:
+            internal:
+                aliases:
+                    - user-input-dc.docker.local
+        logging:
+                driver: syslog
+                options:
+                        tag: docker-user-input-dc
+        restart: unless-stopped
+        depends_on:
+            - "reasons-db"
+    reasons-db:
+        extends:
+            file: reasons_sds/app.yml
+            service: app
+        networks:
+            internal:
+                aliases:
+                    - reasons-db.docker.local
+        logging:
+                driver: syslog
+                options:
+                        tag: docker-reasons-db
+        env_file:
+            - django_secret_key
+        restart: unless-stopped
+        
+networks:
+    internal:
+        name: voom-network
+        external: true

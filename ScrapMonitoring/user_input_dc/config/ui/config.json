@@ -1,0 +1,27 @@
+{
+  "location_page": {
+    "title": "Operations"
+  },
+  "capture_page": {
+    "fullscreen_modal": false,
+    "part_entry": "text",
+    "part_entry_options": [
+      "Gearbox",
+      "Buttons",
+      "Other"
+    ],
+    "clear_part_on_submit": true,
+    "event_log_length": 10
+  },
+  "reasons_api": {
+    "host": null,
+    "port": 7001
+  },
+  "mqtt": {
+    "host": null,
+    "port": 9001,
+    "prefix": [
+      "scrap_monitoring"
+    ]
+  }
+}

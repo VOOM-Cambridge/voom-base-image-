@@ -1,0 +1,101 @@
+version: '2'
+
+services:
+        
+    timeseries-db:
+        extends:
+            file: timeseries_sds/app.yml
+            service: db
+        networks:
+            internal:
+                aliases:
+                    - timeseries-db.docker.local
+        logging:
+                driver: syslog
+                options:
+                        tag: docker-timeseries-db
+        restart: unless-stopped
+        depends_on:
+            - "mqtt_broker"
+    timeseries-db-input:
+        extends:
+            file: timeseries_sds/app.yml
+            service: telegraf
+        networks:
+            internal:
+                aliases:
+                    - timeseries-input.docker.local
+        restart: unless-stopped
+        depends_on:
+            - "timeseries-db"
+            - "mqtt_broker"
+    timeseries-db-input-fault:
+        extends:
+            file: timeseries_sds/app.yml
+            service: telegraf_fault
+        networks:
+            internal:
+                aliases:
+                    - timeseries-input-fault.docker.local
+        restart: unless-stopped
+        depends_on:
+            - "timeseries-db"
+            - "mqtt_broker"
+    timeseries-db-input-tracking:
+        extends:
+            file: timeseries_sds/app.yml
+            service: telegraf_tracking
+        networks:
+            internal:
+                aliases:
+                    - timeseries-input-tracking.docker.local
+        restart: unless-stopped
+        depends_on:
+            - "timeseries-db"
+    timeseries-db-input-worker:
+        extends:
+            file: timeseries_sds/app.yml
+            service: telegraf_worker
+        networks:
+            internal:
+                aliases:
+                    - timeseries-input-worker.docker.local
+        logging:
+            driver: syslog
+            options:
+                tag: docker-timeseries-input-worker
+        restart: unless-stopped
+        depends_on:
+            - "timeseries-db"
+            - "mqtt_broker"
+    mqtt_broker:
+        extends:
+            file: mqtt_broker/app.yml
+            service: app
+        networks:
+            internal:
+                aliases:
+                    - mqtt.docker.local
+        logging:
+                driver: syslog
+                options:
+                        tag: docker-mqtt-broker
+        restart: unless-stopped
+    dashboard:
+        extends:
+            file: dashboard_ui/app.yml
+            service: app
+        networks:
+            internal:
+                aliases:
+                    - dashboard-ui.docker.local
+        logging:
+                driver: syslog
+                options:
+                        tag: docker-dashboard-ui
+        restart: unless-stopped
+        depends_on:
+            - "mqtt_broker"
+networks:
+    internal:
+        name: voom-network
